@@ -50,9 +50,9 @@ py manage.py flush
 py manage.py import_data
 ```
 
-# If you want to edit the data added to the database, go to the file: playground/data
-# If you want to edit how the data is added, go to the file: playground/management/commands/import_data.py
-# Then run: py manage.py flush && py manage.py import_data
+If you want to edit the data added to the database, go to the file: playground/data
+If you want to edit how the data is added, go to the file: playground/management/commands/import_data.py
+Then run: py manage.py flush && py manage.py import_data
 
 7. Run the server
 ```sh
