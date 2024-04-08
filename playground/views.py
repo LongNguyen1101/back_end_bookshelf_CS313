@@ -1,79 +1,62 @@
 from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
-from . import models
+from playground.controller.book_controller import book_controller
+from playground.controller.order_controller import order_controller
 
 
-class BookHandler():
+class api_handler:
+    # api/books/
     @api_view(['GET'])
     @staticmethod
-    def get_all_book(request):
-        try:
-            books = models.Book.objects.values('id', 'title', 'cover', 'unit_price')
+    def get_all_books(request):
+        data, error = book_controller.get_all_books_controller(request)
 
-            if not books:
-                return HttpResponse("Error: Books not found!!", status=404)
-
-            data = [{'id': book['id'], 
-                     'title': book['title'],
-                     'cover': request.build_absolute_uri(f'/api/{book["cover"]}') if book['cover'] else None,
-                     'unit_price': book['unit_price']
-                    } for book in books]
-
-            return JsonResponse(data, status=201, safe=False)
+        if data == '404': 
+            return HttpResponse(f"Error: {error}", status=404)
+        elif data == '500':
+            return HttpResponse(f"Error: {error}", status=500)
         
-        except Exception as e:
-            return HttpResponse(f'Error occur: {e}', status=500)
+        return JsonResponse(data, status=201, safe=False)
+        
     
 
+    # api/books/{str_variable}
     @api_view(['GET'])
     @staticmethod
     def get_books_by_name(request, str_variable):
-        try:
-            books = models.Book.objects.filter(title__icontains=str_variable).values('id', 'title', 'cover', 'unit_price')
+        data, error = book_controller.get_books_by_name_controller(request, str_variable)
+
+        if data == '404': 
+            return HttpResponse(f"Error: {error}", status=404)
+        elif data == '500':
+            return HttpResponse(f"Error: {error}", status=500)
         
-            if not books:
-                return HttpResponse("Books not found", status=404)
-
-            data = [{'id': book['id'], 
-                     'title': book['title'],
-                     'cover': request.build_absolute_uri(f'/api/{book["cover"]}') if book['cover'] else None,
-                     'unit_price': book['unit_price']
-                    } for book in books]
-
-            return JsonResponse(data, status=200, safe=False)
-    
-        except Exception as e:
-            return HttpResponse(f'Error occur: {e}', status=500)
+        return JsonResponse(data, status=201, safe=False)
         
 
 
+    #api/book_detail/{book_id}
     @api_view(['GET'])
     @staticmethod
-    def get_books_by_id(request, book_id):
-        try:
-            books_query = models.Book.objects.filter(id=book_id).values('id', 'title', 'author', 'category', 'published_year', 
-                                                         'summary', 'cover', 'unit_price', 'stock')
-    
-            if books_query.exists():
-                book_data = books_query.first()  # Lấy phần tử đầu tiên của queryset
-            else:
-                # Xử lý trường hợp không tìm thấy sách
-                return HttpResponse("Books not found", status=404)
+    def get_book_by_id(request, book_id):
+        data, error = book_controller.get_book_by_id_controller(request, book_id)
+
+        if data == '404': 
+            return HttpResponse(f"Error: {error}", status=404)
+        elif data == '500':
+            return HttpResponse(f"Error: {error}", status=500)
+        
+        return JsonResponse(data, status=201, safe=False)
 
 
-            data = {'id': book_data['id'], 
-                    'title': book_data['title'],
-                    'author': book_data['author'],
-                    'category': book_data['category'],
-                    'published_year': book_data['published_year'],
-                    'summary': book_data['summary'],
-                    'cover': request.build_absolute_uri(f'/api/{book_data["cover"]}') if book_data['cover'] else None,
-                    'unit_price': book_data['unit_price'],
-                    'stock': book_data['stock']}
 
-            return JsonResponse(data, status=200, safe=False)
-    
-        except Exception as e:
-            return HttpResponse(f'Error occur: {e}', status=500)
+    #api/order/{json}
+    @api_view(['PUT'])
+    @staticmethod
+    def place_order(request):
+       status_code, msg = order_controller.place_order(request)
 
-
+       if status_code == '400':
+           return HttpResponse(f'Error: {msg}', status=400)
+       
+       return HttpResponse('success', status=200)

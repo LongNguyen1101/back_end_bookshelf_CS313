@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "product_type": "book",
+      "quantity": 2,
+      "product_id": 1
+    },
+    {
+      "product_type": "office_supplies",
+      "quantity": 3,
+      "product_id": 5
+    }
+  ]
+}
