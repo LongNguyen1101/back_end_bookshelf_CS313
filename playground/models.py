@@ -1,22 +1,23 @@
 from django.db import models
 
 class Book(models.Model):
-    id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=100, unique=True)
-    author = models.CharField(max_length=100)
-    category = models.CharField(max_length=30)
+    ibsn13 = models.PositiveBigIntegerField(primary_key=True)
+    title = models.CharField(max_length=100)
+    subtitle = models.CharField(max_length=100, blank=True, null=True)
+    authors = models.CharField(max_length=100, blank=True, null=True)
+    categories = models.CharField(max_length=100, blank=True, null=True)
+    thumbnail = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     published_year = models.PositiveIntegerField(blank=True, null=True)
-    summary = models.TextField(blank=True, null=True)
-    cover = models.ImageField(upload_to='data/images/books/', blank=True, null=True)
-    unit_price = models.PositiveIntegerField(blank=True, default=0)
-    stock = models.PositiveIntegerField(blank=True, default=0)
+    average_rating = models.FloatField(blank=True, null=True)
+    num_pages = models.PositiveIntegerField(blank=True, null=True)
     
     class Meta:
         db_table = 'Book'
 
     def __str__(self):
         return self.title
-
+    
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
     total = models.PositiveIntegerField(blank=True, default=0)
