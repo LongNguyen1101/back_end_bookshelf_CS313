@@ -1,3 +1,4 @@
+from django.http import Http404
 from playground import models
 from django.shortcuts import get_object_or_404
 import json
@@ -13,36 +14,33 @@ class order_controller:
             # Get list of items from JSON
             items = data.get('items', [])
 
+            if items is None: return 400, 'Invalid JSON format'
+
             # # Create or retrieve user's order
-            order, _ = models.Order.objects.get_or_create()
+            order, _ = models.PurchaseOrder.objects.get_or_create()
 
             # # Iterate through each item in the list and create or update order items
             for item in items:
-                product_type = item.get('product_type')
+                product_id = item.get('book_id')
                 quantity = item.get('quantity')
-                product_id = item.get('product_id')
 
-            #     # Check the product type and retrieve the product from the database
-                if product_type == 'book':
-                    product = get_object_or_404(models.Book, id=product_id)
-            #     # elif product_type == 'office_supplies':
-            #     #     product = get_object_or_404(models.OfficeSupply, id=product_id)
-                else:
-                    return 400, f'Invalid product type: {product_type}'
-                
-            #     product.stock -= quantity
+                book = get_object_or_404(models.Book, book_id=product_id)
 
-            #     # Create or update order item
-                order_item, _ = models.OrderBook.objects.get_or_create(order=order, book=product)
+                # Create or update order item
+                order_item, _ = models.OrderDetail.objects.get_or_create(order=order, book=book)
                 order_item.quantity = quantity
-                price += product.unit_price * quantity
+                price += book.price * quantity
                 order_item.save()
-                product.save()
 
-            order.total = price
+            order.total = round(price, 2)
             order.save()
 
-            return 200, 'success'
+            response = {
+                'id': order.id,
+                'total': order.total
+            }
+
+            return 200, response
     
-        except json.JSONDecodeError:
-            return 400, 'Invalid JSON format'
+        except Exception as e:
+            return 500, e
