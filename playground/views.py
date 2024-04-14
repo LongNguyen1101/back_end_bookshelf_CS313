@@ -44,7 +44,6 @@ class api_handler:
         else :
             return HttpResponse(f"Error: {msg}", status=status_code)
         
-        
 
 
     #api/order/{json}

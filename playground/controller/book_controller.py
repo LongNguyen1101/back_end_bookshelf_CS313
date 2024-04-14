@@ -48,9 +48,8 @@ class book_controller:
                                                          'description', 'published_year', 'average_rating', 'num_pages', 'price')
     
             if books_query.exists():
-                book_data = books_query.first()  # Lấy phần tử đầu tiên của queryset
+                book_data = books_query.first() 
             else:
-                # Xử lý trường hợp không tìm thấy sách
                 return 404, "Books not found!!"
 
 
