@@ -1,6 +1,9 @@
 import pandas as pd
 from efficient_apriori import apriori
 
+TRANSACTION_FILE = './data/raw/final_transactions.csv'
+EXPORT_PATH = './data/raw/rules.csv'
+
 def convert_data(data):
     transactions = []
     for i in range(0, len(data)):
@@ -36,10 +39,10 @@ def export_rules(rules):
     })
     results = sorted(results, key=lambda x: x['support'], reverse=True)
     rules_df = pd.DataFrame(results)
-    rules_df.to_csv('data/rules.csv', index=False)
+    rules_df.to_csv(EXPORT_PATH, index=False)
 
 def main():
-    df = pd.read_csv('data/transaction.csv', header=None)
+    df = pd.read_csv(TRANSACTION_FILE, header=None)
     data = convert_data(df)
     itemsets, rules = get_rules(data)
     export_rules(rules)
