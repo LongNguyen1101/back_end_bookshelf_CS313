@@ -42,13 +42,13 @@ class book_controller:
         
 
 
-    def get_book_by_id_controller(request, book_book_id):
+    def get_book_detail_controller(request, book_id):
         try:
-            books_query = models.Book.objects.filter(book_id=book_book_id).values('book_id', 'title', 'authors', 'categories', 'thumbnail', 
+            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'categories', 'thumbnail', 
                                                          'description', 'published_year', 'average_rating', 'num_pages', 'price')
     
-            if books_query.exists():
-                book_data = books_query.first() 
+            if book_query.exists():
+                book_data = book_query.first() 
             else:
                 return 404, "Books not found!!"
 
@@ -67,4 +67,24 @@ class book_controller:
             return 201, data
     
         except Exception as e: 
+            return 500, e
+        
+    def get_books_by_id_controller(book_id):
+        try:
+            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'thumbnail', 'price')
+        
+            if book_query.exists():
+                book = book_query.first() 
+            else:
+                return 404, "Books not found!!"
+
+            data = {'book_id': book['book_id'], 
+                     'title': book['title'],
+                     'thumbnail': book['thumbnail'],
+                     'authors': book['authors'],
+                     'price': book['price']}
+
+            return 201, data
+        
+        except Exception as e:
             return 500, e

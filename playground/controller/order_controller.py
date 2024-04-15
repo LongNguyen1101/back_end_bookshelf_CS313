@@ -1,4 +1,3 @@
-from django.http import Http404
 from playground import models
 from django.shortcuts import get_object_or_404
 import json
