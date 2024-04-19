@@ -4,14 +4,17 @@ from django.db.models import Q
 class book_controller:
     def get_all_books_controller(request):
         try:
-            books = models.Book.objects.values('book_id', 'title', 'thumbnail', 'price')
+            books = models.Book.objects.values('book_id', 'title', 'thumbnail', 'price', 'categories', 'authors', 'average_rating')
 
             if not books: return 404, "Books not found!!"
 
             data = [{'book_id': book['book_id'], 
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
-                     'price': book['price']
+                     'price': book['price'],
+                     'category': book['categories'],
+                     'authors': book['authors'],
+                     'average_rating': book['average_rating']
                     } for book in books]
 
 
@@ -24,7 +27,7 @@ class book_controller:
     def get_books_by_name_controller(request, str_variable):
         try:
             books = models.Book.objects.filter(
-                Q(title__icontains=str_variable) | Q(authors__icontains=str_variable)).values('book_id', 'title', 'authors', 'thumbnail', 'price')
+                Q(title__icontains=str_variable) | Q(authors__icontains=str_variable)).values('book_id', 'title', 'authors', 'thumbnail', 'price', 'categories')
         
             if not books: return 404, "Books not found!!"
 
@@ -32,7 +35,8 @@ class book_controller:
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
                      'authors': book['authors'],
-                     'price': book['price']
+                     'price': book['price'],
+                     'category': book['categories']
                     } for book in books]
 
             return 201, data
@@ -71,7 +75,7 @@ class book_controller:
         
     def get_books_by_id_controller(book_id):
         try:
-            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'thumbnail', 'price')
+            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'thumbnail', 'price', 'average_rating')
         
             if book_query.exists():
                 book = book_query.first() 
@@ -82,7 +86,9 @@ class book_controller:
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
                      'authors': book['authors'],
-                     'price': book['price']}
+                     'price': book['price'],
+                     'average_rating': book['average_rating']
+                    }
 
             return 201, data
         
