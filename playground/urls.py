@@ -6,10 +6,13 @@ from django.conf.urls.static import static
 # URLConf
 # api/
 urlpatterns = [
+    path('category_list/', api_handler.get_category_list, name='category_list'),
+
     # book
     path('books/', api_handler.get_all_books),
     path('books/<str:str_variable>/', api_handler.get_books_by_name),
     path('book_detail/<int:book_id>/', api_handler.get_book_detail),
+    path('<str:category>/', api_handler.get_books_by_category),
 
     # order
     path('order/', api_handler.place_order),
