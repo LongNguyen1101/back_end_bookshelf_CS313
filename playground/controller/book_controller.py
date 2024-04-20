@@ -4,14 +4,17 @@ from django.db.models import Q
 class book_controller:
     def get_all_books_controller(request):
         try:
-            books = models.Book.objects.values('book_id', 'title', 'thumbnail', 'price')
+            books = models.Book.objects.values('book_id', 'title', 'thumbnail', 'price', 'categories', 'authors', 'average_rating')
 
             if not books: return 404, "Books not found!!"
 
             data = [{'book_id': book['book_id'], 
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
-                     'price': book['price']
+                     'price': book['price'],
+                     'category': book['categories'],
+                     'authors': book['authors'],
+                     'average_rating': book['average_rating']
                     } for book in books]
 
 
@@ -24,7 +27,7 @@ class book_controller:
     def get_books_by_name_controller(request, str_variable):
         try:
             books = models.Book.objects.filter(
-                Q(title__icontains=str_variable) | Q(authors__icontains=str_variable)).values('book_id', 'title', 'authors', 'thumbnail', 'price')
+                Q(title__icontains=str_variable) | Q(authors__icontains=str_variable)).values('book_id', 'title', 'authors', 'thumbnail', 'price', 'categories', 'average_rating')
         
             if not books: return 404, "Books not found!!"
 
@@ -32,7 +35,9 @@ class book_controller:
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
                      'authors': book['authors'],
-                     'price': book['price']
+                     'price': book['price'],
+                     'category': book['categories'],
+                     'average_rating': book['average_rating'],
                     } for book in books]
 
             return 201, data
@@ -40,7 +45,47 @@ class book_controller:
         except Exception as e:
             return 500, e
         
+    
+    def get_books_by_category_controller(request, category):
+        try:
+            books = models.Book.objects.filter(categories=category).values('book_id', 'title', 'authors', 'thumbnail', 'price', 'categories', 'average_rating')
+        
+            if not books:
+                return 404, "Books not found!!"
 
+            data = [{'book_id': book['book_id'], 
+                     'title': book['title'],
+                     'thumbnail': book['thumbnail'],
+                     'authors': book['authors'],
+                     'price': book['price'],
+                     'category': book['categories'],
+                     'average_rating': book['average_rating']
+                    } for book in books]
+
+            return 201, data
+        
+        except Exception as e:
+            return 500, e
+        
+    
+    def get_category_list_controller(request):
+        try:
+            categories_field = models.Book.objects.values_list('categories', flat=True)
+
+            if not categories_field.exists():
+                return 404, "Books not found!!"
+
+            categories = set()
+            for cate in categories_field:
+                if cate:
+                    categories.update([cate])
+
+            category_list = sorted(categories)
+
+            return 201, category_list
+
+        except Exception as e:
+            return 500, str(e)
 
     def get_book_detail_controller(request, book_id):
         try:
@@ -68,10 +113,11 @@ class book_controller:
     
         except Exception as e: 
             return 500, e
+    
         
     def get_books_by_id_controller(book_id):
         try:
-            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'thumbnail', 'price')
+            book_query = models.Book.objects.filter(book_id=book_id).values('book_id', 'title', 'authors', 'thumbnail', 'price', 'average_rating')
         
             if book_query.exists():
                 book = book_query.first() 
@@ -82,7 +128,9 @@ class book_controller:
                      'title': book['title'],
                      'thumbnail': book['thumbnail'],
                      'authors': book['authors'],
-                     'price': book['price']}
+                     'price': book['price'],
+                     'average_rating': book['average_rating']
+                    }
 
             return 201, data
         

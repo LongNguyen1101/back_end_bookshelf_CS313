@@ -30,6 +30,17 @@ class api_handler:
         else:
             return HttpResponse(f"Error: {msg}", status=status_code)
         
+    # api/{category}
+    @api_view(['GET'])
+    @staticmethod
+    def get_books_by_category(request, category):
+        status_code, msg = book_controller.get_books_by_category_controller(request, category)
+
+        if status_code == 201: 
+            return JsonResponse(msg, status=201, safe=False)
+        else:
+            return HttpResponse(f"Error: {msg}", status=status_code)
+        
 
     #api/book_detail/{book_id}
     @api_view(['GET'])
@@ -42,7 +53,16 @@ class api_handler:
         else :
             return HttpResponse(f"Error: {msg}", status=status_code)
         
+    #api/category_list
+    @api_view(['GET'])
+    @staticmethod
+    def get_category_list(request):
+        status_code, msg = book_controller.get_category_list_controller(request)
 
+        if status_code == 201: 
+            return JsonResponse(msg, status=201, safe=False)
+        else :
+            return HttpResponse(f"Error: {msg}", status=status_code)
 
     #api/order/{json}
     @api_view(['PUT'])
