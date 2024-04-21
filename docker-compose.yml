@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./back_end_bookshelf
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"

@@ -1,10 +1,10 @@
-FROM python:3.11-slim-bullseye
+FROM python:3.11-slim
 
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-WORKDIR /app
-COPY . /app
+WORKDIR /app/backend
+COPY . /app/backend
 
 EXPOSE 8000
 
